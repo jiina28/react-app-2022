@@ -1,23 +1,18 @@
 import logo from './logo.svg';
 import './App.css';
 import {useState} from 'react';
+import {Link, Routes, Route, useParams} from 'react-router-dom';
 
 function Header(props) {
   return <header>
-    <h1><a href='/index.html' onClick={(event) => {
-      event.preventDefault();
-      props.onSelect();
-    }}>WEB - Login</a></h1>
+    <h1><Link to='/'>WEB</Link></h1>
   </header>
 }
 
 function Nav(props) {
   const callback = el =>
     <li key={el.id}>
-      <a href={'/read/' + el.id} onClick={(event) => {
-        event.preventDefault();
-        props.onSelect(el.id);
-      }}>{el.title}</a>
+      <Link to={'/read/' + el.id}>{el.title}</Link>
     </li>
 
   const tag = props.data.map(callback)
@@ -37,39 +32,42 @@ function Article(props) {
 </article>
 }
 
-function App() {
-  const [mode, setMode] = useState('WELCOME');
-  const [id, setId] = useState(null);
+function Read(props) {
+  const params = useParams();
+  const id = Number(params.id);
+  const topic = props.data.filter(el=>el.id === id)[0];
+  return <Article title={topic.title} body={'Hello, '+topic.body}></Article>
+}
 
+function Create() {
+  return <article>
+    <h1>create</h1>
+    <form action="/api/create">
+      <p><input type="text" name="title" placeholder="제목" /></p>
+      <p><textarea name="body" placeholder="본문"></textarea></p>
+      <p><input type="submit" value="생성"></input></p>
+    </form>
+  </article>
+}
+
+function App() {
   const topics = [
     { id: 1, title: 'html', body: 'html is ...' },
     { id: 2, title: 'css', body: 'css is ...' },
     { id: 3, title: 'javascript', body: 'javascript is ...' }
   ]
 
-  let content = null;
-  if(mode === 'WELCOME') {
-    content = <Article title='WELCOME' body='Hello, WEB'></Article>
-  }
-  else if(mode === 'READ') {
-  const topic = topics.filter(el => el.id === id)[0];
-  content = <Article title={topic.title} body={topic.body}></Article>
-
-  }
-
-  const styleObj = {
-    border: '1px solid red'
-  }
   return (
     <div>
-      <Header onSelect={() => setMode('WELCOME')}></Header>
-      <Nav data={topics} onSelect={(_id) => {
-        setMode('READ');
-        setId(_id);
-        }}>
-          
+      <Header></Header>
+      <Nav data={topics}>
         </Nav>
-      {content}
+      <Routes>
+        <Route path="/" element={<Article title='WELCOME' body='Hello, WEB'></Article>}></Route>
+        <Route path="/read/:id" element={<Read data={topics}></Read>}></Route>
+        <Route path="/create" element={<Create></Create>} ></Route>
+      </Routes>
+      <Link to="/create">create</Link>
     </div>
   );
 }
