@@ -11,19 +11,12 @@ function Header(props) {
   </header>
 }
 
-function Article(props) {
-  return <article>
-    <h2>Welcome, {props.title}</h2>
-    {props.body}!
-</article>
-}
-
 function Nav(props) {
   const callback = e =>
     <li key={e.id}>
       <a href={'/read/' + e.id} onClick={(event) => {
         event.preventDefault();
-        props.onSelect();
+        props.onSelect(e.id);
       }}>{e.title}</a>
     </li>
 
@@ -36,8 +29,17 @@ function Nav(props) {
   </nav>
 }
 
+
+function Article(props) {
+  return <article>
+    <h2>Welcome, {props.title}</h2>
+    {props.body}!
+</article>
+}
+
 function App() {
   const [mode, setMode] = useState('WELCOME');
+  const [id, setId] = useState(null);
 
   const topics = [
     { id: 1, title: 'html', body: 'html is ...' },
@@ -50,13 +52,23 @@ function App() {
     content = <Article title='WELCOME' body='Hello, WEB'></Article>
   }
   else if(mode === 'READ') {
-    content = <Article title='READ' body='Hello, READ'></Article>
+  const topic = topics.filter(el => el.id === id)[0];
+  content = <Article title={topic.title} body={topic.body}></Article>
+
   }
 
+  const styleObj = {
+    border: '1px solid red'
+  }
   return (
     <div>
       <Header onSelect={() => setMode('WELCOME')}></Header>
-      <Nav data={topics} onSelect={() => setMode('READ')}></Nav>
+      <Nav data={topics} onSelect={(_id) => {
+        setMode('READ');
+        setId(_id);
+        }}>
+          
+        </Nav>
       {content}
     </div>
   );
