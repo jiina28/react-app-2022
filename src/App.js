@@ -12,12 +12,12 @@ function Header(props) {
 }
 
 function Nav(props) {
-  const callback = e =>
-    <li key={e.id}>
-      <a href={'/read/' + e.id} onClick={(event) => {
+  const callback = el =>
+    <li key={el.id}>
+      <a href={'/read/' + el.id} onClick={(event) => {
         event.preventDefault();
-        props.onSelect(e.id);
-      }}>{e.title}</a>
+        props.onSelect(el.id);
+      }}>{el.title}</a>
     </li>
 
   const tag = props.data.map(callback)
